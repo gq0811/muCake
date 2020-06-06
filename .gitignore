@@ -1,0 +1,3 @@
+# Project exclude paths
+/arrow-common/target/
+/arrow-service/target/
