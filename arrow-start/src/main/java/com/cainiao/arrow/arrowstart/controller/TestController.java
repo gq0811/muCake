@@ -2,6 +2,7 @@ package com.cainiao.arrow.arrowstart.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.cainiao.arrow.arrowcommon.dto.UserGroupDTO;
+import com.cainiao.arrow.arrowcommon.util.SpringContextUtil;
 import com.cainiao.arrow.arrowservice.group.impl.GroupServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ public class TestController {
     public String getStr(@RequestParam(required = false ,name = "param1") String param){
         try {
             String res = param ==null?"":"ffff";
-//            GroupServiceImpl groupService = SpringContextUtil.getBean("groupServiceImpl");
+            GroupServiceImpl groupService = SpringContextUtil.getBean("GroupServiceImpl");
             List<UserGroupDTO> list = groupServiceImpl.queryList();
             return JSON.toJSONString(list);
         }catch (Exception e){

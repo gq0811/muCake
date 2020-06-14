@@ -10,6 +10,6 @@
        http://www.springframework.org/schema/task
 		http://www.springframework.org/schema/task/spring-task-3.1.xsd">
 
-    <bean id="SpringContextUtil" class="com.cainiao.arrow.arrowcommon.dto.util.SpringContextUtil">
+    <bean id="SpringContextUtil" class="com.cainiao.arrow.arrowcommon.util.SpringContextUtil">
     </bean>
 </beans>
