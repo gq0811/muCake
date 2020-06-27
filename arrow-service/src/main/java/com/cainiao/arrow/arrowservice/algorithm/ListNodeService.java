@@ -68,20 +68,55 @@ public class ListNodeService {
     /**
      * 每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针random指向一个随机节点
      * 请对此链表进行深拷贝，并返回拷贝后的头结点
+     * 思路：因为random不好控制，所以在每一个节点后面复制一份插在链表中，根据next.random来复制random关系
      */
-    public RandomListNode Clone(RandomListNode pHead)
+    public static RandomListNode Clone(RandomListNode pHead)
     {
+        if(pHead==null){
+            return null;
+        }
+        RandomListNode start = pHead;
+        while(start!=null){
+            int label = start.label;
+            RandomListNode newRandomListNode = new RandomListNode(label);
+            //插入链表
+            newRandomListNode.next = start.next;
+            start.next = newRandomListNode;
+            start = start.next.next;
+        }
+        start = pHead;
+        //按照原始的关系，把random的关系挂上
+        while(start!=null){
+            //不一定所有节点都有random
+            if(start.random!=null){
+                start.next.random = start.random.next;
+            }
+            start = start.next.next;
+        }
+        start = pHead.next;
+        pHead.next = null;
+        RandomListNode newHead = start;
+        while(start.next!=null){
+            start.next = start.next.next;
+            start = start.next;
+        }
+        return newHead;
 
-        return null;
     }
 
     public static void main(String[] args) {
-        List<Integer> list = Arrays.asList(1,2,3,4,5);
-        ListNode listNode = ListNodeService.createListNode(list,0);
-//        while (listNode!=null){
-//            System.out.printf(listNode.val+"");
-//            listNode = listNode.next;
-//        }
-        System.out.printf(ListNodeService.FindKthToTail(listNode,2)+"");
+        RandomListNode randomListNode = new RandomListNode(12);
+        RandomListNode randomListNode2 = new RandomListNode(13);
+        RandomListNode randomListNode3 = new RandomListNode(14);
+        randomListNode.next = randomListNode2;
+        randomListNode2.next = randomListNode3;
+        randomListNode.random = randomListNode3;
+        randomListNode3.random = randomListNode;
+        RandomListNode res = Clone(randomListNode);
+        while (res!=null){
+            System.out.printf(res.label+"");
+            res = res.next;
+        }
+
     }
 }

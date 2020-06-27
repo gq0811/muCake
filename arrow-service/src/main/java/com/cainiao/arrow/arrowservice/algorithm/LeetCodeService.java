@@ -1,11 +1,10 @@
 package com.cainiao.arrow.arrowservice.algorithm;
 
+import com.alibaba.fastjson.JSON;
 import com.cainiao.arrow.arrowcommon.dto.ListNode;
+import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Stack;
-import java.util.TreeMap;
+import java.util.*;
 
 public class LeetCodeService {
 
@@ -210,12 +209,272 @@ public class LeetCodeService {
         }
         return stack.isEmpty();
     }
+    /**
+     * 字符串中字符的所有排列
+     *
+     */
+    public ArrayList<String> Permutation(String str) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        if(str == null || str.equals("")){
+            return arrayList;
+        }
+        char[] charArray = str.toCharArray();
+        TreeSet<String> set = new TreeSet<>();
+        realPermutation(charArray,0,set);
+        return new ArrayList<>(set);
+    }
 
+    /**
+     * 递归去交换
+     * 用TreeSet保证结果不重复,且有顺序
+     * 用String不好的地方，是需要不停的转char数组，再转回string
+     * TreeSet对象也会创建很多，浪费内存，还有可能OOM
+     */
+    public Set<String> realPermutation(String str,int start) {
+        TreeSet<String> set = new TreeSet<>();
+        if(start>=str.length()-1){
+            set.add(str);
+            return set;
+        }
+        char[] charArray = str.toCharArray();
+        for(int i=start;i<str.length();i++){
+            swap(charArray,i,start);
+            String currStr = String.valueOf(charArray);
+            set.addAll(realPermutation(currStr,start+1));
+            //交换完，要换回来，再按之前的顺序来
+            swap(charArray,i,start);
+        }
+        return set;
+    }
+    /**
+     * 递归去交换
+     * 用TreeSet保证结果不重复,且有顺序
+     */
+    public void realPermutation(char[] charArray,int start,TreeSet<String> set) {
+        if(start>=charArray.length-1){
+            set.add(String.valueOf(charArray));
+            return;
+        }
+        for(int i=start;i<charArray.length;i++){
+            swap(charArray,i,start);
+            realPermutation(charArray,start+1,set);
+            //交换完，要换回来，再按之前的顺序来
+            swap(charArray,i,start);
+        }
+    }
+
+    /**
+     * 交换charArray中两个位置的数据
+     */
+    private void swap(char[] charArray, int i, int j){
+        char temp = charArray[i];
+        charArray[i] = charArray[j];
+        charArray[j] = temp;
+    }
+
+    /**
+     * 给定一个数target，分成若干部分，得到最大的乘积
+     * 例如：8，可以分成 2，3，3，得到最大的乘积18
+     * 个人思路：把target尽量等分，可以保证乘积最大
+     */
+    public int cutRope(int target) {
+        int max = 0;
+        for(int i=target;i>=1;i--){
+            //把数分成i份
+            int avg = target/i;
+            int left = target%i;
+            int curr = intPow(avg+1,left)*intPow(avg,i-left);
+            max = Math.max(curr, max);
+        }
+        return max;
+    }
+    /**
+     * 还有个思路，可以转换为数学问题，因为都是整数，所以尽量的用3去分割，可以使乘积最大。
+     *
+     */
+    public int cutRope2(int n) {
+        if(n==2){
+            return 1;
+        }else if(n==3){
+            return 2;
+        }
+        if(n%3==0){
+            return (int)Math.pow(3,n/3);
+        }else if(n%3==1){
+            return 4*(int)Math.pow(3,n/3-1);
+        }else {
+            return 2*(int)Math.pow(3,n/3);
+        }
+    }
+    private int intPow(int n,int count){
+        int res = 1;
+        while (count-->0){
+            res = res*n;
+        }
+        return res;
+    }
+    /**
+     * 一个机器人从坐标0,0的格子开始移动，每一次只能向左，右，上，下四个方向移动一格，
+     * 但是不能进入行坐标和列坐标的数位之和大于k的格子
+     * 本质上是海岛问题，不是动态规划的问题。
+     */
+    public int movingCount(int threshold, int rows, int cols)
+    {
+        boolean [][] visited = new boolean[rows][cols];
+        return movingCount(threshold,rows,cols,0,0,visited);
+    }
+
+    public int movingCount(int threshold, int rows, int cols,int i,int j,boolean [][] visited)
+    {
+        //如果越界，或者已经访问过，
+        if(i<0 || i>=rows || j<0 || j>=cols || visited[i][j] || checkSum(i)+checkSum(j)>threshold){
+            return 0;
+        }
+        visited[i][j] = true;
+        return  1+ movingCount(threshold,rows,cols,i-1,j,visited)+
+                movingCount(threshold,rows,cols,i+1,j,visited)+
+                movingCount(threshold,rows,cols,i,j-1,visited)+
+                movingCount(threshold,rows,cols,i,j+1,visited);
+    }
+
+    //返回位数和
+    private int checkSum(int n){
+        if(n<10){
+            return n;
+        }
+        int res = 0;
+        while(n>0){
+            int curr = n%10;
+            res+=curr;
+            n = n/10;
+        }
+        return res;
+    }
+
+    /**
+     * 是否存在一条包含某字符串所有字符的路径
+     * char[] matrix给的是一个一维数组（打平成一行）
+     */
+    public boolean hasPath(char[] matrix, int rows, int cols, char[] str)
+    {
+        boolean [][] visited = new boolean[rows][cols];
+        for(int i=0;i<rows;i++){
+            for (int j=0;j<cols;j++){
+                if(hasPath(matrix,rows,cols,i,j,0,str,visited)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * i,j为起始位置
+     * count记住当前位置
+     */
+    public boolean hasPath(char[] matrix, int rows, int cols,int i,int j, int count,char[] str,boolean [][] visited)
+    {
+        int index = i*cols+j;
+        if(i<0 || i>=rows || j<0 || j>=cols || visited[i][j] || matrix[index]!=str[count]){
+            return false;
+        }
+        if(count==str.length-1){
+            return true;
+        }
+        visited[i][j] = true;
+        //到这个地方时，代表之前匹配上了，count都要加1
+        boolean res = hasPath(matrix,rows,cols,i-1,j,count+1,str,visited)||
+               hasPath(matrix,rows,cols,i+1,j,count+1,str,visited)||
+                hasPath(matrix,rows,cols,i,j-1,count+1,str,visited)||
+                hasPath(matrix,rows,cols,i,j+1,count+1,str,visited);
+        if(res){
+            return true;
+        }
+        //和海岛问题不同，起始的位置是变化的，所以visited要重置。
+        visited[i][j] = false;
+        return false;
+    }
+
+    /**
+     * 滑动窗口的最大值，
+     * 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个： {[2,3,4],2,6,2,5,1}， {2,[3,4,2],6,2,5,1}， {2,3,[4,2,6],2,5,1}， {2,3,4,[2,6,2],5,1}， {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}
+     * 第一种思路，每次都求窗口中的最大值，可以用treeMap维护，也可以实时排序求得最大值
+     */
+    public ArrayList<Integer> maxInWindows(int [] num, int size) {
+        TreeMap<Integer,Integer> treeMap = new TreeMap<>();
+        ArrayList<Integer> res =new ArrayList<>();
+        if(num == null|| size<=0 || size>num.length){
+            return res;
+        }
+        int len = num.length;
+        for(int i=0;i<size;i++){
+            if(!treeMap.containsKey(num[i])){
+                treeMap.put(num[i],1);
+            }else{
+                treeMap.put(num[i],treeMap.get(num[i])+1);
+            }
+        }
+        res.add(getMaxVal(treeMap));
+        for(int i=size;i<len;i++){
+            if(!treeMap.containsKey(num[i])){
+                treeMap.put(num[i],1);
+            }else{
+                treeMap.put(num[i],treeMap.get(num[i])+1);
+            }
+            int count = treeMap.get(num[i-size])-1;
+            if(count<=0){
+                treeMap.remove(num[i-size]);
+            }else{
+                treeMap.put(num[i-size],treeMap.get(num[i-size])-1);
+            }
+            res.add(getMaxVal(treeMap));
+        }
+        return res;
+    }
+
+    /**
+     * 滑动窗口的最大值，
+     * 第二种思路：用队列保存最大值所在的索引（有点像最小栈）,保证最大值在最前面
+     */
+    public ArrayList<Integer> maxInWindows2(int [] num, int size){
+        ArrayList<Integer> res =new ArrayList<>();
+        LinkedList<Integer> linkedList = new LinkedList<>();
+        if(num == null|| size<=0 || size>num.length){
+            return res;
+        }
+        int len = num.length;
+        for(int i=0;i<size-1;i++){
+            //在最大值前面不可能是当前窗口的最大值了
+            while (!linkedList.isEmpty()&&num[i]>num[linkedList.getLast()]){
+                linkedList.removeLast();
+            }
+            linkedList.add(i);
+        }
+        for(int i=size-1;i<len;i++){
+            while (!linkedList.isEmpty()&&num[i]>num[linkedList.getLast()]){
+                linkedList.removeLast();
+            }
+            linkedList.add(i);
+            //check最大值索引，如果失效了，则删掉
+            int index = linkedList.getFirst();
+            if(i-size+1>index){
+                linkedList.removeFirst();
+            }
+            res.add(num[linkedList.getFirst()]);
+        }
+        return res;
+    }
+
+
+    private Integer getMaxVal(TreeMap<Integer,Integer> treeMap){
+        return treeMap.lastKey();
+    }
     public static void main(String[] args) {
+        LeetCodeService leetCodeService = new LeetCodeService();
         int [] in = {1,2,3,4,5};
         int [] out = {3,2,5,4,1};
-        Boolean isPopOrder = IsPopOrder(in,out);
-        System.out.printf("is"+isPopOrder);
+        char [] arr = {'c','c'};
+        System.out.printf(""+leetCodeService.cutRope(4));
     }
 
     /**

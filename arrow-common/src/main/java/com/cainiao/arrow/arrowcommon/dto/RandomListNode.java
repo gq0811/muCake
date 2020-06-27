@@ -1,11 +1,11 @@
 package com.cainiao.arrow.arrowcommon.dto;
 
 public class RandomListNode {
-    int label;
-    RandomListNode next = null;
-    RandomListNode random = null;
+    public int label;
+    public RandomListNode next = null;
+    public RandomListNode random = null;
 
-    RandomListNode(int label) {
+    public RandomListNode(int label) {
         this.label = label;
     }
 }

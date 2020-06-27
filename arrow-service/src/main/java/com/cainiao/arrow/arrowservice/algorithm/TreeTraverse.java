@@ -256,14 +256,35 @@ public class TreeTraverse {
         FindPath(root.right,target- root.val,res,currList);
         currList.remove(currList.size()-1);
     }
+    /**
+     * 该二叉搜索树转换成一个排序的双向链表
+     * 思路：因为是二叉搜索树，所以用中序遍历的思路.用left,right来实现双向
+     */
+    static TreeNode pre = null;
+    public static TreeNode Convert(TreeNode pRootOfTree) {
+        if(pRootOfTree ==null){
+            return pRootOfTree;
+        }
+        Convert(pRootOfTree.right);
+        if(pre==null){
+            pre = pRootOfTree;
+        }else{
+            pRootOfTree.right = pre;
+            pre.left = pRootOfTree;
+            pre = pRootOfTree;
+        }
+        Convert(pRootOfTree.left);
+        return pre;
+    }
+
+
     public static void main(String[] args) {
 
         int [] pre = {1,2,4,7,3,5,6,8};
         int [] in = {4,7,2,1,5,3,8,6};
         TreeNode treeNode = TreeTraverse.reConstructBinaryTree(pre,in);
 
-
-        String [] level = new String[]{"1","2","6","3","4","5","-1"};
+        String [] level = new String[]{"10","6","14","4","8","12","16"};
         String [] level1 = new String[]{"8","9","2"};
 
         List<String> list = Arrays.asList(level);
@@ -272,9 +293,13 @@ public class TreeTraverse {
         list.toArray(strings);
 
         TreeNode treeNode1 = TreeTraverse.reConstructBinaryTree(level);
+        TreeNode res = Convert(treeNode1);
+        while (res!=null){
+            System.out.printf(res.val+"");
+            res = res.right;
+        }
         TreeNode treeNode2= TreeTraverse.reConstructBinaryTree(level1);
-        ArrayList<ArrayList<Integer>> res = FindPath(treeNode1,6);
-        System.out.printf(JSON.toJSONString(res));
+        //ArrayList<ArrayList<Integer>> res = FindPath(treeNode1,6);
     }
 
 
