@@ -3,6 +3,7 @@ package com.cainiao.arrow.arrowservice.algorithm;
 import com.alibaba.fastjson.JSON;
 import com.cainiao.arrow.arrowcommon.dto.TreeNode;
 import com.sun.tools.corba.se.idl.constExpr.BooleanOr;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -39,11 +40,38 @@ public class TreeTraverse {
             postOrderTraverse(root.right);
         }
     }
+
+    /**
+     * 前序和中序重构二叉树
+     */
+    public static TreeNode reConstructBinaryTree(int [] pre,int [] in) {
+        Map<Integer,Integer> map = new HashMap<>();
+        int len = in.length;
+        for (int i=0;i<in.length;i++){
+            //值和索引对应上
+            map.put(in[i],i);
+        }
+        return  reConstructBinaryTree(pre,in,0,len-1,0,len-1, map );
+    }
+
+    public static TreeNode reConstructBinaryTree(int [] pre,int [] in,int preStart ,int preEnd,int inStart,int inEnd,Map<Integer,Integer> map ) {
+        if(preStart>preEnd){
+            return null;
+        }
+        int val = pre[preStart];
+        TreeNode treeNode = new TreeNode(val);
+        int index = map.get(val);
+        treeNode.left = reConstructBinaryTree(pre,in,preStart+1,preStart+index-inStart,inStart,index-1,map);
+        treeNode.right = reConstructBinaryTree(pre,in,preStart+index-inStart+1,preEnd,index+1,inEnd,map);
+        return treeNode;
+    }
+
+
     /**
      * 层次遍历
      * 利用队列
      */
-    public static  List<String>  levelTraverse(TreeNode root) {
+    public static String  levelTraverse(TreeNode root) {
         LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
         List<String> res = new ArrayList<>();
         queue.add(root);
@@ -76,39 +104,24 @@ public class TreeTraverse {
                 break;
             }
         }
-        return res;
+        StringBuilder sb = new StringBuilder();
+        for(String str:res){
+            sb.append(str);
+            sb.append(",");
+        }
+        return sb.toString();
     }
 
-    /**
-     * 前序和中序重构二叉树
-     */
-    public static TreeNode reConstructBinaryTree(int [] pre,int [] in) {
-        Map<Integer,Integer> map = new HashMap<>();
-        int len = in.length;
-        for (int i=0;i<in.length;i++){
-            //值和索引对应上
-            map.put(in[i],i);
-        }
-        return  reConstructBinaryTree(pre,in,0,len-1,0,len-1, map );
-    }
-
-    public static TreeNode reConstructBinaryTree(int [] pre,int [] in,int preStart ,int preEnd,int inStart,int inEnd,Map<Integer,Integer> map ) {
-        if(preStart>preEnd){
-            return null;
-        }
-        int val = pre[preStart];
-        TreeNode treeNode = new TreeNode(val);
-        int index = map.get(val);
-        treeNode.left = reConstructBinaryTree(pre,in,preStart+1,preStart+index-inStart,inStart,index-1,map);
-        treeNode.right = reConstructBinaryTree(pre,in,preStart+index-inStart+1,preEnd,index+1,inEnd,map);
-        return treeNode;
-    }
 
     /**
      * 层次遍历重构二叉树
      * {8,8,7,9,2,#,#,#,#,4,7}
      */
-    public static TreeNode reConstructBinaryTree(String [] level) {
+    public static TreeNode reConstructBinaryTree(String str) {
+        if(str.charAt(str.length()-1)==','){
+            str = str.substring(0,str.length()-1);
+        }
+        String [] level = str.split(",");
         LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
         String val = level[0];
         TreeNode root = new TreeNode(Integer.parseInt(val));
@@ -141,6 +154,52 @@ public class TreeTraverse {
         currNode.right = rightNode;
         queue.add(rightNode);
         reConstructBinaryTree(level,queue,index+2);
+    }
+
+    /**
+     * 用先序遍历来做树的序列化和反序列化
+     */
+    String Serialize(TreeNode root) {
+        if(root == null)
+            return "";
+        StringBuilder sb = new StringBuilder();
+        Serialize2(root, sb);
+        return sb.toString();
+    }
+
+    void Serialize2(TreeNode root, StringBuilder sb) {
+        if(root == null){
+            sb.append("#,");
+            return;
+        }
+        sb.append(root.val);
+        sb.append(",");
+        Serialize2(root.left,sb);
+        Serialize2(root.right,sb);
+    }
+
+    int serializeIndex = -1;
+    /**
+     * 反序列化
+     */
+    TreeNode Deserialize(String str) {
+        if(str.length() == 0)
+            return null;
+        String[] strs = str.split(",");
+        return Deserialize2(strs);
+    }
+
+    TreeNode Deserialize2(String[] strs) {
+        serializeIndex ++;
+        //如果不是空
+        if(!strs[serializeIndex].equals("#")){
+            int val = Integer.parseInt(strs[serializeIndex]);
+            TreeNode treeNode = new TreeNode(val);
+            treeNode.left = Deserialize2(strs);
+            treeNode.right = Deserialize2(strs);
+            return treeNode;
+        }
+        return null;
     }
 
     /**
@@ -284,21 +343,24 @@ public class TreeTraverse {
         int [] in = {4,7,2,1,5,3,8,6};
         TreeNode treeNode = TreeTraverse.reConstructBinaryTree(pre,in);
 
-        String [] level = new String[]{"10","6","14","4","8","12","16"};
-        String [] level1 = new String[]{"8","9","2"};
-
-        List<String> list = Arrays.asList(level);
+//        List<String> list = Arrays.asList(level);
+        String levelStr = "5,4,#,3,#,2";
+        System.out.println("levelStr:"+levelStr);
         //list转string
-        String[] strings = new String[list.size()];
-        list.toArray(strings);
+//        String[] strings = new String[list.size()];
+//        list.toArray(strings);
 
-        TreeNode treeNode1 = TreeTraverse.reConstructBinaryTree(level);
-        TreeNode res = Convert(treeNode1);
-        while (res!=null){
-            System.out.printf(res.val+"");
-            res = res.right;
-        }
-        TreeNode treeNode2= TreeTraverse.reConstructBinaryTree(level1);
+        TreeNode treeNode1 = TreeTraverse.reConstructBinaryTree(levelStr);
+        preOrderTraverse(treeNode1);
+        String treeStr =  TreeTraverse.levelTraverse(treeNode1);
+        System.out.println("treeStr:"+treeStr);
+        TreeNode treeNode2 = TreeTraverse.reConstructBinaryTree(treeStr);
+        preOrderTraverse(treeNode2);
+//        TreeNode res = Convert(treeNode1);
+//        while (res!=null){
+//            System.out.printf(res.val+"");
+//            res = res.right;
+//        }
         //ArrayList<ArrayList<Integer>> res = FindPath(treeNode1,6);
     }
 

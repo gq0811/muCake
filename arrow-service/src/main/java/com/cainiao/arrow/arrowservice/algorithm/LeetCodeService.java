@@ -464,17 +464,99 @@ public class LeetCodeService {
         }
         return res;
     }
-
-
     private Integer getMaxVal(TreeMap<Integer,Integer> treeMap){
         return treeMap.lastKey();
     }
+
+    /**
+     * 得到一个数据流中的中位数
+     * Insert用来插入数据
+     */
+    //用LinkedList来维护一个顺序队列
+    LinkedList<Integer> medianList = new LinkedList<>();
+    public void Insert(Integer num) {
+         if(medianList.isEmpty()){
+             medianList.add(num);
+         }else{
+             if(num<=medianList.getFirst()){
+                 medianList.addFirst(num);
+             }else if(num>=medianList.getLast()){
+                 medianList.addLast(num);
+             }else{
+                 //放到合适的位置
+                 int index = 0;
+                 while (medianList.get(index)<num){
+                     index++;
+                 }
+                 medianList.add(index,num);
+             }
+         }
+        System.out.printf(JSON.toJSONString(medianList));
+    }
+    /**
+     * 得到中位数
+     */
+    public Double GetMedian() {
+        if(medianList == null||medianList.size()==0){
+            return null;
+        }
+        int len = medianList.size();
+        //奇数
+        if(len%2==1){
+           return Double.valueOf(medianList.get(len/2));
+        }
+        Double t1 = Double.valueOf(medianList.get(len/2));
+        Double t2 = Double.valueOf(medianList.get(len/2-1));
+        return (t1+t2)/2;
+    }
+
+    /**
+     * 2.还可以用一个小顶堆，和一个大顶堆，中位数就取各自的顶端
+     * 大顶堆：5，3，2 小顶堆：6，7，8
+     */
+    PriorityQueue<Integer> minPriorityQueue = new PriorityQueue<>();
+    PriorityQueue<Integer> maxPriorityQueue  = new PriorityQueue<Integer>(15, new Comparator<Integer>() {
+        @Override
+        public int compare(Integer o1, Integer o2) {
+            return o2 - o1;
+        }
+    });
+    //用计数，控制均匀放到两个堆中
+    int medianCount = 0;
+    public void Insert2(Integer num) {
+        if(medianCount%2==0){
+            //往最小堆中添加的时候，不直接加，而是在大堆中混一圈之后，把最大放最小堆中，
+            // 这样保证最小堆中的数比最大堆中的都大。
+            maxPriorityQueue.add(num);
+            minPriorityQueue.add(maxPriorityQueue.poll());
+        }else{
+            minPriorityQueue.add(num);
+            maxPriorityQueue.add(minPriorityQueue.poll());
+        }
+        medianCount++;
+    }
+    /**
+     * 得到中位数
+     */
+    public Double GetMedian2() {
+        if(medianCount%2==1){
+            return Double.valueOf(minPriorityQueue.peek());
+        }else{
+            Double t1 = Double.valueOf(maxPriorityQueue.peek());
+            Double t2 = Double.valueOf(minPriorityQueue.peek());
+            return (t1+t2)/2;
+        }
+    }
+
+
     public static void main(String[] args) {
         LeetCodeService leetCodeService = new LeetCodeService();
         int [] in = {1,2,3,4,5};
         int [] out = {3,2,5,4,1};
         char [] arr = {'c','c'};
-        System.out.printf(""+leetCodeService.cutRope(4));
+        leetCodeService.Insert(5);
+        leetCodeService.Insert(2);
+        leetCodeService.Insert(3);
     }
 
     /**
