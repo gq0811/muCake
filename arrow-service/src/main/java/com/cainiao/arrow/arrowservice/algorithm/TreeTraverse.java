@@ -89,7 +89,7 @@ public class TreeTraverse {
                 TreeNode nullNode = new TreeNode(-1);
                 queue.add(nullNode);
             }
-            if(currNode.left!=null){
+            if(currNode.right!=null){
                 queue.add(currNode.right);
             }else if(currNode.val!=-1){
                 TreeNode nullNode = new TreeNode(-1);
@@ -154,6 +154,129 @@ public class TreeTraverse {
         currNode.right = rightNode;
         queue.add(rightNode);
         reConstructBinaryTree(level,queue,index+2);
+    }
+    /**
+     * 层次打印树，但是是二维list，每层的数据在一个list里面
+     * 思路：用now和next分别计数，记录当前层次的个数和下一层次的个数。
+     */
+    public static ArrayList<ArrayList<Integer> > Print(TreeNode pRoot) {
+        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        ArrayList<Integer> curr = new ArrayList<>();
+        if(pRoot==null){
+            return res;
+        }
+        queue.add(pRoot);
+        //计数，now代表当前层次的个数，next代表下一层次的个数。
+        int now = 1,next = 0;
+        while (!queue.isEmpty()){
+            TreeNode currNode = queue.pop();
+            curr.add(currNode.val);
+            now--;
+            if(currNode.left!=null){
+                queue.add(currNode.left);
+                next++;
+            }
+            if(currNode.right!=null){
+                queue.add(currNode.right);
+                next++;
+            }
+            if(now==0){
+                res.add(new ArrayList<>(curr));
+                now = next;
+                next = 0;
+                curr = new ArrayList<>();
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 按照之字形打印二叉树，即第一行按照从左到右的顺序打印
+     * 第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推
+     */
+    public ArrayList<ArrayList<Integer> > PrintWithZhi(TreeNode pRoot) {
+        LinkedList<TreeNode> queue = new LinkedList<TreeNode>();
+        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+        ArrayList<Integer> curr = new ArrayList<>();
+        if(pRoot==null){
+            return res;
+        }
+        queue.add(pRoot);
+        //计数，now代表当前层次的个数，next代表下一层次的个数。
+        int now = 1,next = 0,level=0;
+        while (!queue.isEmpty()){
+            TreeNode currNode = queue.pop();
+            if (level%2==1){
+                curr.add (0,currNode.val);
+            }else{
+                curr.add (currNode.val);
+            }
+            now--;
+            //如果是偶数层，先加右节点。
+            if (currNode.left != null) {
+                queue.add(currNode.left);
+                next++;
+            }
+            if (currNode.right != null) {
+                queue.add(currNode.right);
+                next++;
+            }
+            if(now==0){
+                level++;
+                res.add(new ArrayList<>(curr));
+                now = next;
+                next = 0;
+                curr = new ArrayList<>();
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 判断一棵二叉树是不是对称的。
+     * 注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+     */
+    public static boolean isSymmetrical(TreeNode pRoot)
+    {
+        if(pRoot==null){
+            return false;
+        }
+        Mirror(pRoot.left);
+        return isSameTree(pRoot.left,pRoot.right);
+    }
+    /**
+     * 判断两棵二叉树是不是一样的(结构和值都是一样的)
+     */
+    public static boolean isSameTree(TreeNode Root1,TreeNode Root2)
+    {
+        if(Root1 == null &&Root2==null){
+            return true;
+        }
+        if(Root1 == null || Root2==null){
+            return false;
+        }
+        if(Root1.val!=Root2.val){
+            return false;
+        }
+        return isSameTree(Root1.left,Root2.left)&&isSameTree(Root1.right,Root2.right);
+    }
+
+    /**
+     * 把一个树转成镜像树
+     */
+    public static void Mirror(TreeNode root) {
+        if(root==null){
+            return;
+        }
+        if(root.left==null && root.right==null){
+            return;
+        }
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+        Mirror(root.left);
+        Mirror(root.right);
     }
 
     /**
@@ -238,22 +361,6 @@ public class TreeTraverse {
             return isSubTree(root1.left,root2.left)&&isSubTree(root1.right,root2.right);
         }
         return false;
-    }
-    /**
-     * 把一个树转成镜像树
-     */
-    public void Mirror(TreeNode root) {
-        if(root==null){
-            return;
-        }
-        if(root.left==null && root.right==null){
-            return;
-        }
-        TreeNode temp = root.left;
-        root.left = root.right;
-        root.right = temp;
-        Mirror(root.left);
-        Mirror(root.right);
     }
 
     /**
@@ -344,18 +451,19 @@ public class TreeTraverse {
         TreeNode treeNode = TreeTraverse.reConstructBinaryTree(pre,in);
 
 //        List<String> list = Arrays.asList(level);
-        String levelStr = "5,4,#,3,#,2";
+        String levelStr = "5,4,#,3";
         System.out.println("levelStr:"+levelStr);
         //list转string
 //        String[] strings = new String[list.size()];
 //        list.toArray(strings);
 
         TreeNode treeNode1 = TreeTraverse.reConstructBinaryTree(levelStr);
-        preOrderTraverse(treeNode1);
-        String treeStr =  TreeTraverse.levelTraverse(treeNode1);
-        System.out.println("treeStr:"+treeStr);
-        TreeNode treeNode2 = TreeTraverse.reConstructBinaryTree(treeStr);
-        preOrderTraverse(treeNode2);
+//        preOrderTraverse(treeNode1);
+//        String treeStr =  TreeTraverse.levelTraverse(treeNode1);
+//        System.out.println("treeStr:"+treeStr);
+//        TreeNode treeNode2 = TreeTraverse.reConstructBinaryTree(treeStr);
+//        preOrderTraverse(treeNode2);
+        System.out.printf("isSameTree:"+isSameTree(treeNode1,treeNode1));
 //        TreeNode res = Convert(treeNode1);
 //        while (res!=null){
 //            System.out.printf(res.val+"");
