@@ -103,7 +103,76 @@ public class ListNodeService {
         return newHead;
 
     }
+    /**
+     * 一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针
+     */
+    public ListNode deleteDuplication(ListNode pHead)
+    {
+        if(pHead == null){
+            return pHead;
+        }
+        ListNode head = pHead;
+        ListNode pre = new ListNode(-1);
+        pre.next = head;
+        head = pre;
+        while (pHead !=null && pHead.next !=null){
+            if(pHead.val == pHead.next.val){
+                int currVal = pHead.val;
+                while(pHead!=null && pHead.val == currVal){
+                    pHead = pHead.next;
+                }
+                pre.next = pHead;
+            }else{
+                pre = pre.next;
+                pHead = pHead.next;
+            }
+        }
+        return head.next;
+    }
 
+    /**
+     * 给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null。
+     * 设，头节点到环入口结点的距离是a，入口结点到相遇点距离是x,相遇点入到口结点距离是t，环的长度为r，(x+t=r)
+     * p1是slow指针走过的距离，p2是fast指针走过的距离，则有
+     * p1 = a+x ,
+     * p2 = 2p1 = p1 + nx, fast指针可能走了n圈，n>=1
+     * 推出，a+x = nx
+     * 再推出 ， a = (n-1)(t+x) + t ,也就是说，从"头节点"和"相遇点"同时开始走，一定会在"环的入口结点"相遇
+     */
+    public static ListNode EntryNodeOfLoop(ListNode pHead)
+    {
+        if(pHead == null){
+            return null;
+        }
+        ListNode meetNode = findNodeOfLoop(pHead);
+        //
+        while(meetNode!= pHead){
+            meetNode = meetNode.next;
+            pHead = pHead.next;
+        }
+        return meetNode;
+    }
+
+    /**
+     * 找到环相遇的那个节点，如果不是环则返回null，有环则返回相遇的那个节点
+     */
+    public static ListNode findNodeOfLoop(ListNode pHead)
+    {
+        if(pHead ==null){
+            return null;
+        }
+        ListNode slow = pHead;
+        ListNode fast = pHead;
+        while (fast!=null && fast.next!=null){
+            slow = slow.next;
+            fast = fast.next.next;
+            //如果有环，肯定会在某一个节点遇到
+            if(slow == fast){
+                return slow;
+            }
+        }
+        return null;
+    }
     public static void main(String[] args) {
         RandomListNode randomListNode = new RandomListNode(12);
         RandomListNode randomListNode2 = new RandomListNode(13);

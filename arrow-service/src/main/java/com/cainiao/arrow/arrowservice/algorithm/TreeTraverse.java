@@ -1,6 +1,7 @@
 package com.cainiao.arrow.arrowservice.algorithm;
 
 import com.alibaba.fastjson.JSON;
+import com.cainiao.arrow.arrowcommon.dto.TreeLinkNode;
 import com.cainiao.arrow.arrowcommon.dto.TreeNode;
 import com.sun.tools.corba.se.idl.constExpr.BooleanOr;
 import org.springframework.util.StringUtils;
@@ -280,6 +281,43 @@ public class TreeTraverse {
     }
 
     /**
+     * 给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。
+     * 注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
+     * 思路：中序为，左、根、右。GetNext首先会找右子树
+     */
+    public TreeLinkNode GetNext(TreeLinkNode pNode)
+    {
+        if(pNode==null){
+            return null;
+        }
+        //代表以pNode为根的树已经遍历完毕，需要往上回溯
+        if(pNode.right == null){
+            TreeLinkNode father =  pNode.next;
+            if(father==null){
+                return null;
+            }
+            //如果pNode是父节点的右子树,父节点为根的树已经遍历完毕，往上回溯
+            if(father.right == pNode){
+                //按右侧顺序往上找，找到第一个不满足条件的
+                while(father != null &&father.right == pNode){
+                    pNode = father;
+                    father = pNode.next;
+                }
+                return father;
+            }else if(father.left == pNode){
+                return father;
+            }
+        }
+        TreeLinkNode rightChild = pNode.right;
+        //找右子树的第一个节点
+        while(rightChild.left!=null){
+            rightChild = rightChild.left;
+        }
+        return rightChild;
+    }
+
+
+    /**
      * 用先序遍历来做树的序列化和反序列化
      */
     String Serialize(TreeNode root) {
@@ -425,6 +463,7 @@ public class TreeTraverse {
     /**
      * 该二叉搜索树转换成一个排序的双向链表
      * 思路：因为是二叉搜索树，所以用中序遍历的思路.用left,right来实现双向
+     * 先递归右子树，这样就不需要一个节点来放头节点
      */
     static TreeNode pre = null;
     public static TreeNode Convert(TreeNode pRootOfTree) {
@@ -443,6 +482,36 @@ public class TreeTraverse {
         return pre;
     }
 
+    /**
+     * 是否是平衡二叉树
+     */
+    public boolean IsBalanced_Solution(TreeNode root) {
+        if(root == null){
+            return true;
+        }
+        if(Math.abs(getHeight(root.left)-getHeight(root.right))>1){
+            return false;
+        }
+        return IsBalanced_Solution(root.left)&&IsBalanced_Solution(root.right);
+    }
+
+    /**
+     * 获取当前二叉树的高度
+     */
+    public int getHeight(TreeNode root) {
+        if(root == null){
+            return 0;
+        }
+        return Math.max(getHeight(root.left),getHeight(root.right))+1;
+    }
+    /**
+     * 如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。
+     * 输入一个数组,求出这个数组中的逆序对的总数P
+     */
+    public int InversePairs(int [] array) {
+
+        return 0;
+    }
 
     public static void main(String[] args) {
 

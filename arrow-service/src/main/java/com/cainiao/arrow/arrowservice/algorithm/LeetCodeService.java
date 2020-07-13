@@ -548,6 +548,152 @@ public class LeetCodeService {
         }
     }
 
+    /**
+     * 实现一个函数用来找出字符流中第一个只出现一次的字符。
+     * 例如，当从字符流中只读出前两个字符"go"时，第一个只出现一次的字符是"g"。
+     * 当从该字符流中读出前六个字符“google"时，第一个只出现一次的字符是"l"
+     * 思路，用一个int数组来表示char元素对应的顺序，-1代表该char已经出现过，
+     */
+    //用一个int数组来表示char元素对应的顺序
+    int [] charArr = new int[256];
+    int appearingOnceIndex = 1;
+    public void Insert(char ch)
+    {
+        if(charArr[ch]==0){
+            charArr[ch] = appearingOnceIndex++;
+        }else{
+            //说明ch已经出现过了
+            charArr[ch] = -1;
+        }
+    }
+    //return the first appearence once char in current stringstream
+    public char FirstAppearingOnce()
+    {
+        int curr = Integer.MAX_VALUE;
+        char candidate = '#';
+        for(int i=0;i<256;i++){
+            if(charArr[i]!=0 && charArr[i]!=-1 && charArr[i]<curr){
+                curr = charArr[i];
+                candidate = (char)i;
+            }
+        }
+        return candidate;
+    }
+    /**
+     * 函数用来匹配包括'.'和'*'的正则表达式。
+     * 模式中的字符'.'表示任意一个字符，而'*'表示它前面的字符可以出现任意次（包含0次）。
+     * 在本题中，匹配是指字符串的所有字符匹配整个模式。
+     * 例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但是与"aa.a"和"ab*a"均不匹配
+     */
+    public boolean match(char[] str, char[] pattern)
+    {
+        if(str ==null || pattern == null){
+            return false;
+        }
+        int strIndex = 0;
+        int patternIndex = 0;
+        return realMatch(str,pattern,strIndex,patternIndex);
+    }
+
+    /**
+     * 递归去匹配
+     */
+    public boolean realMatch(char[] str, char[] pattern ,int strIndex,int patternIndex)
+    {
+        //都匹配到最后位置了
+        if(strIndex == str.length && patternIndex == pattern.length){
+            return true;
+        }
+        //str到最后了，但是pattern还没到最后
+        if(strIndex != str.length && patternIndex == pattern.length){
+            return false;
+        }
+        //先判断*，因为会有'.*'的情况
+        if(patternIndex<pattern.length-1 && pattern[patternIndex+1]=='*'){
+            if((strIndex!=str.length&&str[strIndex]==pattern[patternIndex]) || (strIndex!=str.length&&pattern[patternIndex]=='.')){
+                 return realMatch(str,pattern,strIndex,patternIndex+2) ||    //匹配0个，
+                         realMatch(str,pattern,strIndex+1,patternIndex+2) || //尝试先匹配1个，
+                         realMatch(str,pattern,strIndex+1,patternIndex); // 继续按当前pattern的方式匹配
+            }else{
+                //此时str[strIndex]和pattern[patternIndex]是不同的字符，例如"a"和"b*"，此时pattern中"b*"就废掉了，往下匹配
+                 return realMatch(str,pattern,strIndex,patternIndex+2);
+            }
+        }
+        //如果相等，或者有'.',那么当前位置匹配，匹配后面位置的字符串
+        if((strIndex!=str.length&&str[strIndex]==pattern[patternIndex]) || (strIndex!=str.length&&pattern[patternIndex]=='.')){
+            return realMatch(str,pattern,strIndex+1,patternIndex+1);
+        }
+        return false;
+    }
+
+    /**
+     * 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+     * 只有一个出现一次的数时，很好办，用异或的方式就可以得到最终的值
+     * 有两个，就得想办法分开。
+     */
+    public void FindNumsAppearOnce(int [] array,int num1[] , int num2[]) {
+        if (array == null){
+            return;
+        }
+        int res = 0;
+        for(int i=0;i<array.length;i++){
+            res = res ^ array[i];
+        }
+        int index = findFirst1(res);
+        for(int i=0;i<array.length;i++) {
+            if(isFirstType(array[i],index)){
+                num1[0] = num1[0] ^ array[i];
+            }else{
+                num2[0] = num2[0] ^ array[i];
+            }
+        }
+    }
+
+    //找到num1、num2第一个不同的位置即可。
+    private int findFirst1(int num){
+        String binaryStr = Integer.toBinaryString(num);
+        int i=0;
+        while(binaryStr.charAt(binaryStr.length()-1-i)!='1'){
+            i++;
+        }
+        return i;
+    }
+
+    //check在index这个位置，是不是等于1,等于就是第一种类型
+    private boolean isFirstType(int num,int index){
+        return ((num>>index)&1) == 1;
+    }
+
+    public int FirstNotRepeatingChar(String str) {
+        if(str==null || "".equals(str)){
+            return -1;
+        }
+        int [] arr =new int['z'-'A'+1];
+        for(int i=0;i<arr.length;i++){
+            arr[i] = -1;
+        }
+        for(int i=0;i<str.length();i++){
+            int ch = str.charAt(i)-'A';
+            if(arr[ch]==-2){
+                continue;
+            }
+            if(arr[ch]==-1){
+                arr[ch] = i;
+            }else{
+                arr[ch] = -2;
+            }
+        }
+        int min = str.length()+1;
+        for(int i=0;i<arr.length;i++){
+            if(arr[i]!=-1 && arr[i]!=-2){
+                if(arr[i] <min){
+                    min = arr[i];
+                }
+            }
+        }
+        return min>str.length()?-1:min;
+    }
+
 
     public static void main(String[] args) {
         LeetCodeService leetCodeService = new LeetCodeService();
@@ -557,6 +703,8 @@ public class LeetCodeService {
         leetCodeService.Insert(5);
         leetCodeService.Insert(2);
         leetCodeService.Insert(3);
+        System.out.printf(leetCodeService.FirstNotRepeatingChar("google")+"");
+
     }
 
     /**
