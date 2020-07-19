@@ -1,6 +1,8 @@
 package com.cainiao.arrow.arrowservice.thread;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * corePoolSize:指定了线程池中的线程数量，它的数量决定了添加的任务是开辟新的线程去执行，还是放到workQueue任务队列中去；
  * maximumPoolSize:指定了线程池中的最大线程数量，这个参数会根据你使用的workQueue任务队列的类型，决定线程池会开辟的最大线程数量；
@@ -30,7 +32,8 @@ public class TestThreadPoolService {
 //        for(int i=0;i<3;i++) {
 //            pool.execute(new ThreadTask());
 //        }
-
+        AtomicInteger atomicInteger = new AtomicInteger();
+        atomicInteger.get();
 
         /**
          * 有界的任务队列：有界的任务队列可以使用ArrayBlockingQueue
