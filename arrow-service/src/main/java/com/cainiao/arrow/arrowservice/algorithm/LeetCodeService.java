@@ -2,6 +2,8 @@ package com.cainiao.arrow.arrowservice.algorithm;
 
 import com.alibaba.fastjson.JSON;
 import com.cainiao.arrow.arrowcommon.dto.ListNode;
+import org.omg.CORBA.MARSHAL;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -664,6 +666,9 @@ public class LeetCodeService {
         return ((num>>index)&1) == 1;
     }
 
+    /**
+     * 找到第一个不重复的字母，例如："google"，则返回"l"
+     */
     public int FirstNotRepeatingChar(String str) {
         if(str==null || "".equals(str)){
             return -1;
@@ -694,6 +699,171 @@ public class LeetCodeService {
         return min>str.length()?-1:min;
     }
 
+    /**
+     *  输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+     *  例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+     */
+    public String PrintMinNumber(int [] numbers) {
+        List<Integer> list = new ArrayList<>();
+        for(int i=0;i<numbers.length;i++){
+           list.add(numbers[i]);
+        }
+        Collections.sort(list,new Comparator<Integer>(){
+            @Override
+            public int compare(Integer t1,Integer t2){
+                String s1 = t1 +"" +t2;
+                String s2 = t2 +"" +t1;
+                return s1.compareTo(s2);
+            }
+        });
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Integer t:list){
+            stringBuilder.append(t);
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     *  数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
+     *  例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。 返回2
+     */
+    //第一种思路，利用排序
+    public int MoreThanHalfNum_Solution(int [] array) {
+        if(array ==null ||array.length==0){
+            return 0;
+        }
+       int count = 1;
+       int candidate = array[0];
+       for(int i=0;i<array.length;i++){
+           if(array[i] == candidate){
+               count++;
+           }else{
+               count--;
+           }
+           if(count < 0){
+               candidate = array[i];
+               count =1;
+           }
+       }
+       return candidate;
+    }
+    public int MoreThanHalfNum_Solution2(int [] array) {
+        return 0;
+    }
+
+    /**
+     *  给一个数组，返回它的最大连续子序列的和
+     *  {6,-3,-2,7,-15,1,2,2}
+     *  思路：动态规划
+     */
+    public int FindGreatestSumOfSubArray(int[] array) {
+        if(array == null || array.length==0){
+            return 0;
+        }
+        int len = array.length;
+        //以i位置为结尾的最大连续子序列的和
+        int [] dp = new int[len];
+        int max = Integer.MIN_VALUE;
+        for(int i=0;i<len;i++){
+            if(i == 0){
+                dp[i] = array[i];
+            }else{
+                //比较，如果array[i]加上之前的比自身还少，也就是dp[i-1]<0,就重新开始计数了。因为是最大连续
+                dp[i] = Math.max(dp[i-1]+array[i],array[i]);
+                max = Math.max(dp[i],max);
+            }
+        }
+        return max;
+    }
+
+
+    /**
+     *  求出1~n的整数中1出现的次数
+     *  思路1：转换为字符串的方式做
+     *  思路2：归纳为数学问题
+     *  设k = n % 10，即为不完整阶梯段的数字
+     *  归纳式为：(n / 10) * 1 + (if(k > 1) 1 else if(k < 1) 0 else k - 1 + 1)
+     *  设k = n % 100，即为不完整阶梯段的数字
+     *  归纳式为：(n / 100) * 10 + (if(k > 19) 10 else if(k < 10) 0 else k - 10 + 1)
+     *  设k = n % 1000
+     *  归纳式为：(n / 1000) * 100 + (if(k >199) 100 else if(k < 100) 0 else k - 100 + 1)
+     */
+    public int NumberOf1Between1AndN_Solution(int n) {
+        int sum = 0;
+        int count = 10;
+        do{
+            sum += (n/count)*(count/10);
+            int k = n % (count/10);
+            if(k > count/10*2-1){
+                sum += count/10;
+            }else if(k<count/10){
+                sum +=0;
+            }else{
+                sum +=(k-count/10+1);
+            }
+            count*=10;
+        }while(n/count!=0);
+        return sum;
+    }
+
+
+    /**
+     * 把只包含质因子2、3和5的数称作丑数（Ugly Number）。
+     * 例如6、8都是丑数，但14不是，因为它包含质因子7。
+     * 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+     * 思路：基于的理念就是，一个丑数是由另一个丑数
+     */
+    public int GetUglyNumber_Solution(int index) {
+        PriorityQueue<Integer> priorityQueue2 = new PriorityQueue<>();
+        PriorityQueue<Integer> priorityQueue3 = new PriorityQueue<>();
+        PriorityQueue<Integer> priorityQueue5 = new PriorityQueue<>();
+        int [] uglyArr = new int [index];
+        uglyArr[0]=1;
+        for(int i=0;i<index-1;i++){
+            int ugly = uglyArr[i];
+            priorityQueue2.add(ugly*2);
+            priorityQueue3.add(ugly*3);
+            priorityQueue5.add(ugly*5);
+            int min = Math.min(Math.min(priorityQueue2.peek(),priorityQueue3.peek()),priorityQueue5.peek());
+            if(min == priorityQueue2.peek()){
+                priorityQueue2.poll();
+            }
+            if(min == priorityQueue3.peek()){
+                priorityQueue3.poll();
+            }
+            if(min == priorityQueue5.peek()){
+                priorityQueue5.poll();
+            }
+            uglyArr[i+1] = min;
+        }
+        return uglyArr[index-1];
+    }
+    /**
+     * 也可以直接用指针来表示，模拟队列的效果
+     */
+    public int GetUglyNumber_Solution2(int index) {
+        if(index<=0){
+            return 0;
+        }
+        int [] uglyArr = new int [index];
+        int p1=0,p2=0,p3=0;
+        int count = 0;
+        uglyArr[0] = 1;
+        while(count<index-1){
+            int min = Math.min(Math.min(uglyArr[p1]*2,uglyArr[p2]*3),uglyArr[p3]*5);
+            if(min == uglyArr[p1]*2){
+                p1++;
+            }
+            if(min == uglyArr[p2]*3){
+                p2++;
+            }
+            if(min == uglyArr[p3]*5){
+                p3++;
+            }
+            uglyArr[++count] = min;
+        }
+        return uglyArr[index-1];
+    }
 
     public static void main(String[] args) {
         LeetCodeService leetCodeService = new LeetCodeService();
@@ -703,7 +873,7 @@ public class LeetCodeService {
         leetCodeService.Insert(5);
         leetCodeService.Insert(2);
         leetCodeService.Insert(3);
-        System.out.printf(leetCodeService.FirstNotRepeatingChar("google")+"");
+        int [] arr2 = new int[]{1,2,3,2,2,2,5,4,2};
 
     }
 
