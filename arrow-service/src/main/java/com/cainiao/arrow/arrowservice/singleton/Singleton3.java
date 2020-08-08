@@ -35,6 +35,7 @@ public class Singleton3 {
             //同步块，线程安全的创建实例
             synchronized (Singleton3.class) {
             //再次检查实例是否存在，如果不存在才真的创建实例
+            // （因为有可能第一个线程判断为null进来之后被阻塞了，第二个线程抢占了锁，然后提前实例化了。所以得再判断一下）
                 if (instance == null) {
                     instance = new Singleton3();
                 }

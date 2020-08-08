@@ -6,11 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
-public class GroupServiceImpl implements GroupService {
+public class GroupServiceImpl2 implements GroupService {
 
     @Override
     public List<UserGroupDTO> queryList(){

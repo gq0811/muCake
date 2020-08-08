@@ -8,8 +8,13 @@ package com.cainiao.arrow.arrowservice.testvolatile;
  *               2）该变量没有包含在具有其他变量的不变式中
  *
  */
-public class TestVolatile implements Runnable{
+public class TestVolatile{
     public static boolean flag = false;
+    public volatile int count =0 ;
+
+    public void inc(){
+        count++;
+    }
     /**
      * 1、Java内存模型规定所有的变量都是存在主存当中，每个线程都有自己的工作内存。
      * 线程对变量的所有操作都必须在"工作内存"中进行，而不能直接对"主存"进行操作。
@@ -19,25 +24,22 @@ public class TestVolatile implements Runnable{
      * 3、volatile关键字无法保证操作的原子性
      * 4、volatile关键字修饰的字段，会禁用编译器和处理器对指令进行重排序，这个在单例模式中可以体会到用处。
      */
-   @Override
-    public  void run(){
-        while (!flag){
-//            try {
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-            System.out.println("current"+Thread.currentThread().getName());
-        }
-    }
 
     public static void main(String[] args) {
+        TestVolatile testVolatile = new TestVolatile();
         for(int i=0;i<10;i++){
-            new Thread(new TestVolatile()).start();
-            if(i==0){
-                TestVolatile.flag = true;
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    synchronized (TestVolatile.class){
+                       for(int j=0;j<1000;j++){
+                           testVolatile.inc();
+                       }
+                   }
+                }
+            }).start();
         }
+        System.out.printf("count"+testVolatile.count);
     }
 
 }
