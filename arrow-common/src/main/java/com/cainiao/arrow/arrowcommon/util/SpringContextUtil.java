@@ -3,6 +3,7 @@ package com.cainiao.arrow.arrowcommon.util;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
 public class SpringContextUtil  implements ApplicationContextAware, DisposableBean{
 
