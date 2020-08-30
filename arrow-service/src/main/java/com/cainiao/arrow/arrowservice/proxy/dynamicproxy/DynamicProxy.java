@@ -41,13 +41,5 @@ public class DynamicProxy {
         Person proxyPerson = (Person)dynamicProxy.getPersonProxy();
         proxyPerson.sayHello("csdcvd",3234);
 
-        String  str = new String();
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("ss");
-        StringBuffer stringBuffer = new StringBuffer();
-        UserGroupDTO userGroupDTO = new UserGroupDTO();
-        UserGroupDTO userGroupDTO2 = new UserGroupDTO();
-        System.out.println(userGroupDTO.hashCode());
-        System.out.println(userGroupDTO2.hashCode());
     }
 }
