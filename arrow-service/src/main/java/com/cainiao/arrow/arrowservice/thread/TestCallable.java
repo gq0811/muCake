@@ -22,7 +22,8 @@ public class TestCallable implements Callable<Integer>{
         for(int i=0;i<10;i++){
             //创建Callable实现类的对象
             TestCallable tc = new TestCallable();
-            //创建FutureTask类的对象
+            //创建FutureTask类的对象,参数是一个实现Callable接口的类
+            //FutureTask<Integer> task = new FutureTask<Integer>(tc);
             FutureTask<Integer> task = new FutureTask<Integer>(() -> {
                 Thread.sleep(1000);
                 return 1;
