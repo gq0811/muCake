@@ -11,27 +11,27 @@ package com.cainiao.arrow.arrowservice.singleton;
  * 饱汉(也叫做懒汉)
  * 线程不安全
  */
-public class Singleton1 {
+public class SingletonLazy {
 
     //定义一个私有静态的引用
-    private static Singleton1 singleton1= null;
-    private Singleton1(){
+    private static SingletonLazy singletonLazy = null;
+    private SingletonLazy(){
 
     }
     //获取实例的方法是公共的
-    public static Singleton1 getInstance(){
-        if(singleton1 == null){
+    public static SingletonLazy getInstance(){
+        if(singletonLazy == null){
             //实例化
-            singleton1 = new Singleton1();
+            singletonLazy = new SingletonLazy();
         }
-        return singleton1;
+        return singletonLazy;
     }
 
     public static void main(String[] args) {
-        Singleton1 singleton1 = Singleton1.getInstance();
-        Singleton1 singleton2 = Singleton1.getInstance();
+        SingletonLazy singletonLazy = SingletonLazy.getInstance();
+        SingletonLazy singleton2 = SingletonLazy.getInstance();
         //返回的是同一个对象
-        System.out.println("_"+singleton1.toString());
+        System.out.println("_"+ singletonLazy.toString());
         System.out.println("_"+singleton2.toString());
     }
 }

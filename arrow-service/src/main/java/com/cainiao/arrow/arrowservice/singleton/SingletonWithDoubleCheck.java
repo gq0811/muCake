@@ -5,7 +5,7 @@ package com.cainiao.arrow.arrowservice.singleton;
  * 饱汉模式(懒汉模式)--双重加锁检查DCL（Double Check Lock）
  * 优点：和2比较，把锁的粒度放小，当实例为null，要去创建的时候再加锁
  */
-public class Singleton3 {
+public class SingletonWithDoubleCheck {
 
     /**
      * 对保存实例的变量添加volatile的修饰
@@ -23,21 +23,21 @@ public class Singleton3 {
      * 如果是后者，则在3执行完毕、2未执行之前，这时instance已经是非null了（但却没有初始化）。
      * 此时线程二进来之后做判断，instance不是null，所以线程二会直接返回 instance，然后使用，然后顺理成章地报错。
      */
-    private volatile static Singleton3 instance = null;
+    private volatile static SingletonWithDoubleCheck instance = null;
 
-    private Singleton3() {
+    private SingletonWithDoubleCheck() {
 
     }
 
-    public static Singleton3 getInstance() {
+    public static SingletonWithDoubleCheck getInstance() {
         //先检查实例是否存在，如果不存在才进入下面的同步块
         if (instance == null) {
             //同步块，线程安全的创建实例
-            synchronized (Singleton3.class) {
+            synchronized (SingletonWithDoubleCheck.class) {
             //再次检查实例是否存在，如果不存在才真的创建实例
             // （因为有可能第一个线程判断为null进来之后被阻塞了，第二个线程抢占了锁，然后提前实例化了。所以得再判断一下）
                 if (instance == null) {
-                    instance = new Singleton3();
+                    instance = new SingletonWithDoubleCheck();
                 }
             }
         }

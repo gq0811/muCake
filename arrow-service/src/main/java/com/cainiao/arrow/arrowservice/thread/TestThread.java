@@ -1,7 +1,6 @@
 package com.cainiao.arrow.arrowservice.thread;
 
-import com.cainiao.arrow.arrowservice.singleton.Singleton1;
-import com.cainiao.arrow.arrowservice.singleton.Singleton2;
+import com.cainiao.arrow.arrowservice.singleton.SingletonWithSynchronized;
 
 public class TestThread extends Thread{
 
@@ -13,7 +12,7 @@ public class TestThread extends Thread{
         while(!interrupted()) {
             try {
                 Thread.sleep(1000);
-                Singleton2.getInstance().getSingletonData();
+                SingletonWithSynchronized.getInstance().getSingletonData();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

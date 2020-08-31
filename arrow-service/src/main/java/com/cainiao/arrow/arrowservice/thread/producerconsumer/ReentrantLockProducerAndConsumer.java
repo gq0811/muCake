@@ -1,4 +1,4 @@
-package com.cainiao.arrow.arrowservice.thread;
+package com.cainiao.arrow.arrowservice.thread.producerconsumer;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;

@@ -1,4 +1,4 @@
-package com.cainiao.arrow.arrowservice.thread;
+package com.cainiao.arrow.arrowservice.thread.producerconsumer;
 
 /**
  *  生产者，消费者
