@@ -532,7 +532,8 @@ public class TreeTraverse {
 //        System.out.println("treeStr:"+treeStr);
 //        TreeNode treeNode2 = TreeTraverse.reConstructBinaryTree(treeStr);
 //        preOrderTraverse(treeNode2);
-        System.out.printf("isSameTree:"+isSameTree(treeNode1,treeNode1));
+        System.out.println("isSameTree:"+isSameTree(treeNode1,treeNode1));
+        System.out.println("isSameTree:"+levelTraverse(treeNode1));
 //        TreeNode res = Convert(treeNode1);
 //        while (res!=null){
 //            System.out.printf(res.val+"");
