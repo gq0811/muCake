@@ -135,12 +135,12 @@ public class ListNodeService {
      * 设，头节点到环入口结点的距离是a，入口结点到相遇点距离是x,相遇点入到口结点距离是t，环的长度为r，(x+t=r)
      * p1是slow指针走过的距离，p2是fast指针走过的距离，则有
      * p1 = a+x ,
-     * p2 = 2p1 = p1 + nx, fast指针可能走了n圈，n>=1
-     * 推出，a+x = nx
+     * p2 = 2p1 = p1 + nr, fast指针可能走了n圈，n>=1
+     * 推出，a+x = nr
      * 再推出 ， a = (n-1)(t+x) + t ,也就是说，从"头节点"和"相遇点"同时开始走，一定会在"环的入口结点"相遇
+     * 那么这时候可以求出来入口节点，顺便就可以求出环的周长。
      */
-    public static ListNode EntryNodeOfLoop(ListNode pHead)
-    {
+    public static ListNode EntryNodeOfLoop(ListNode pHead) {
         if(pHead == null){
             return null;
         }
@@ -173,19 +173,28 @@ public class ListNodeService {
         }
         return null;
     }
-    public static void main(String[] args) {
-        RandomListNode randomListNode = new RandomListNode(12);
-        RandomListNode randomListNode2 = new RandomListNode(13);
-        RandomListNode randomListNode3 = new RandomListNode(14);
-        randomListNode.next = randomListNode2;
-        randomListNode2.next = randomListNode3;
-        randomListNode.random = randomListNode3;
-        randomListNode3.random = randomListNode;
-        RandomListNode res = Clone(randomListNode);
-        while (res!=null){
-            System.out.printf(res.label+"");
-            res = res.next;
-        }
 
+    //20 30 50 60 90 4 5 6
+    public static int getK(int [] arr){
+        if(arr == null || arr.length == 0){
+            return -1;
+        }
+        int start = 0,end = arr.length-1;
+        while(start<end){
+            int mid = (start + end)/2;
+            if(arr[mid]>start){
+                start = mid+1;
+            }else if(arr[mid]<end){
+                end = mid -1;
+            }
+        }
+        return arr[start];
+    }
+
+
+
+    public static void main(String[] args) {
+        int []arr = new int []{20, 30 ,50, 60, 90 ,4 ,5 ,6};
+        System.out.println(getK(arr));
     }
 }
