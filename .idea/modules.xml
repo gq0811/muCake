@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/arrow-common/arrow-common.iml" filepath="$PROJECT_DIR$/arrow-common/arrow-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/arrow-service/arrow-service.iml" filepath="$PROJECT_DIR$/arrow-service/arrow-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/arrow-start/arrow-start.iml" filepath="$PROJECT_DIR$/arrow-start/arrow-start.iml" />
+      <module fileurl="file://$PROJECT_DIR$/arrow-start/arrow-start.iml" filepath="$PROJECT_DIR$/arrow-start/arrow-start.iml" />
     </modules>
   </component>
 </project>
