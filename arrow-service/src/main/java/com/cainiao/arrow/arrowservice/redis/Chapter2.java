@@ -7,6 +7,10 @@ import redis.clients.jedis.Tuple;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
+/**
+ * redis在登录cookie方面的应用
+ */
 public class Chapter2 {
 
     public static final void main(String[] args)

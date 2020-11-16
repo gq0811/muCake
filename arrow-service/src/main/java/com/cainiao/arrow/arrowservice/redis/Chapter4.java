@@ -4,6 +4,11 @@ import redis.clients.jedis.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
+
+/**
+ * redis事务的控制（Transaction）
+ * redis的Pipeline的使用（Pipeline）
+ */
 public class Chapter4 {
 
 
