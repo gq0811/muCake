@@ -14,24 +14,17 @@ import java.util.stream.Collectors;
 
 public class XlsxUtil {
 
-
-
     public static void main(String[] args) {
 
-
-        Map<String, List<String>> map = new HashMap<>();
-        List<String> workNo = new ArrayList<>();
-
         try {
-
-            String fileName = "/Users/huqingnie/Downloads/映射文件.xlsx";  //修改d盘的aaa.xlsx文件
+            String fileName = "/Users/huqingnie/Downloads/WPS文档/映射文件.xlsx";
             XSSFWorkbook xwb = new XSSFWorkbook(new FileInputStream(fileName));
             Map<String, List<String>> shopIdMap = new HashMap<String, List<String>>();
             String fillStr = "";    //存储aaa文件里的数据
             String[] fillSplit = null;
-            XSSFSheet xSheet = xwb.getSheetAt(2);  //获取excel表的第一个sheet
-            for (int i = 0; i <= xSheet.getLastRowNum(); i++) {  //遍历所有的行
-                if (xSheet.getRow(i) == null) { //这行为空执行下次循环
+            XSSFSheet xSheet = xwb.getSheetAt(2);
+            for (int i = 0; i <= xSheet.getLastRowNum(); i++) {
+                if (xSheet.getRow(i) == null) {
                     continue;
                 }
                 String currKey = xSheet.getRow(i).getCell(3).toString();
